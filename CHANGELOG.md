@@ -22,6 +22,8 @@
     - Fixed knob reset on double-click in Semitone/Octave-mode (#387)
 - Module [GOTO](./docs/Goto.md)
     - Implemented smooth transition for "top left" jump destination (#388)
+- Module [MIDI-MON](./docs/MidiMon.md)
+    - Added support for CC 14-bit/RPN/NRPN messages
 - Module [MIDI-STEP](./docs/MidiStep.md)
     - Added option for Hercules DJControl Starlight (#361)
 
