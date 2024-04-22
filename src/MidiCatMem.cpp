@@ -12,6 +12,8 @@ struct MidiCatMemModule : Module {
 		NUM_PARAMS
 	};
 	enum InputIds {
+		INPUT_PREV,
+		INPUT_NEXT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
@@ -59,10 +61,10 @@ struct MidiCatMemModule : Module {
 		leftExpander.messageFlipRequested = true;
 
 		if (processDivider.process()) {
-			if (prevTrigger.process(params[PARAM_PREV].getValue())) {
+			if (prevTrigger.process(params[PARAM_PREV].getValue() + inputs[INPUT_PREV].getVoltage())) {
 				reinterpret_cast<BufferedSwitchQuantity*>(paramQuantities[PARAM_PREV])->setBuffer();
 			}
-			if (nextTrigger.process(params[PARAM_NEXT].getValue())) {
+			if (nextTrigger.process(params[PARAM_NEXT].getValue() + inputs[INPUT_NEXT].getVoltage())) {
 				reinterpret_cast<BufferedSwitchQuantity*>(paramQuantities[PARAM_NEXT])->setBuffer();
 			}
 			if (applyTrigger.process(params[PARAM_APPLY].getValue())) {
@@ -168,8 +170,10 @@ struct MidiCatMemWidget : ThemedModuleWidget<MidiCatMemModule> {
 		addChild(createWidget<StoermelderBlackScrew>(Vec(box.size.x - RACK_GRID_WIDTH, 0)));
 		addChild(createWidget<StoermelderBlackScrew>(Vec(box.size.x - RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addChild(createParamCentered<TL1105>(Vec(15.0f, 227.1f), module, MidiCatMemModule::PARAM_PREV));
-		addChild(createParamCentered<TL1105>(Vec(15.0f, 258.5f), module, MidiCatMemModule::PARAM_NEXT));
+		addChild(createParamCentered<TL1105>(Vec(15.0f, 177.8f), module, MidiCatMemModule::PARAM_PREV));
+		addInput(createInputCentered<StoermelderPort>(Vec(15.0f, 201.5f), module, MidiCatMemModule::INPUT_PREV));
+		addChild(createParamCentered<TL1105>(Vec(15.0f, 235.6f), module, MidiCatMemModule::PARAM_NEXT));
+		addInput(createInputCentered<StoermelderPort>(Vec(15.0f, 260.3f), module, MidiCatMemModule::INPUT_NEXT));
 		addChild(createLightCentered<TinyLight<WhiteLight>>(Vec(15.f, 284.4f), module, MidiCatMemModule::LIGHT_APPLY));
 		addChild(createParamCentered<TL1105>(Vec(15.0f, 306.7f), module, MidiCatMemModule::PARAM_APPLY));
 		MemDisplay* memDisplay = createWidgetCentered<MemDisplay>(Vec(15.0f, 336.2f));

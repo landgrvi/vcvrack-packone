@@ -26,6 +26,7 @@
     - Fixed broken button-handling when triggered by MIDI-mapping
 - Module [MIDI-CAT MEM](./docs/MidiCat.md#mem-expander)
     - Fixed broken button-handling when triggered by MIDI-mapping (#356)
+    - Added trigger-inputs for Prev and Next
 - Module [MIDI-MON](./docs/MidiMon.md)
     - Added support for CC 14-bit/RPN/NRPN messages
 - Module [MIDI-STEP](./docs/MidiStep.md)
