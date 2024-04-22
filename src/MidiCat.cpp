@@ -1671,15 +1671,11 @@ struct MidiCatWidget : ThemedModuleWidget<MidiCatModule>, ParamWidgetContextExte
 
 	Module* expMem;
 	BufferedSwitchQuantity* expMemPrevQuantity;
-	dsp::SchmittTrigger expMemPrevTrigger;
 	BufferedSwitchQuantity* expMemNextQuantity;
-	dsp::SchmittTrigger expMemNextTrigger;
 	BufferedSwitchQuantity* expMemParamQuantity;
-	dsp::SchmittTrigger expMemParamTrigger;
 
 	MidiCatCtxBase* expCtx;
 	BufferedSwitchQuantity* expCtxMapQuantity;
-	dsp::SchmittTrigger expCtxMapTrigger;
 
 	enum class LEARN_MODE {
 		OFF = 0,
@@ -1817,15 +1813,15 @@ struct MidiCatWidget : ThemedModuleWidget<MidiCatModule>, ParamWidgetContextExte
 				}
 			}
 			if (expMem) {
-				if (expMemPrevTrigger.process(expMemPrevQuantity->buffer)) {
+				if (expMemPrevQuantity->getBuffer()) {
 					expMemPrevQuantity->resetBuffer();
 					expMemPrevModule();
 				}
-				if (expMemNextTrigger.process(expMemNextQuantity->buffer)) {
+				if (expMemNextQuantity->getBuffer()) {
 					expMemNextQuantity->resetBuffer();
 					expMemNextModule();
 				}
-				if (expMemParamTrigger.process(expMemParamQuantity->buffer)) {
+				if (expMemParamQuantity->getBuffer()) {
 					expMemParamQuantity->resetBuffer();
 					enableLearn(LEARN_MODE::MEM);
 				}
@@ -1841,7 +1837,7 @@ struct MidiCatWidget : ThemedModuleWidget<MidiCatModule>, ParamWidgetContextExte
 				}
 			}
 			if (expCtx) {
-				if (expCtxMapTrigger.process(expCtxMapQuantity->buffer)) {
+				if (expCtxMapQuantity->getBuffer()) {
 					expCtxMapQuantity->resetBuffer();
 					module->enableLearn(-1, true);
 				}

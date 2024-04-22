@@ -27,12 +27,18 @@ struct MidiCatMemModule : Module {
 	/** [Stored to JSON] */
 	std::map<std::pair<std::string, std::string>, MemModule*> midiMap;
 
+	dsp::ClockDivider processDivider;
+	dsp::SchmittTrigger prevTrigger;
+	dsp::SchmittTrigger nextTrigger;
+	dsp::SchmittTrigger applyTrigger;
+
 	MidiCatMemModule() {
 		panelTheme = pluginSettings.panelThemeDefault;
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configSwitch<BufferedSwitchQuantity>(PARAM_PREV, 0.f, 1.f, 0.f, "Scan for previous module mapping");
 		configSwitch<BufferedSwitchQuantity>(PARAM_NEXT, 0.f, 1.f, 0.f, "Scan for next module mapping");
 		configSwitch<BufferedSwitchQuantity>(PARAM_APPLY, 0.f, 1.f, 0.f, "Apply mapping");
+		processDivider.setDivision(48);
 		onReset();
 	}
 
@@ -51,6 +57,18 @@ struct MidiCatMemModule : Module {
 	void process(const ProcessArgs& args) override {
 		leftExpander.producerMessage = &midiMap;
 		leftExpander.messageFlipRequested = true;
+
+		if (processDivider.process()) {
+			if (prevTrigger.process(params[PARAM_PREV].getValue())) {
+				reinterpret_cast<BufferedSwitchQuantity*>(paramQuantities[PARAM_PREV])->setBuffer();
+			}
+			if (nextTrigger.process(params[PARAM_NEXT].getValue())) {
+				reinterpret_cast<BufferedSwitchQuantity*>(paramQuantities[PARAM_NEXT])->setBuffer();
+			}
+			if (applyTrigger.process(params[PARAM_APPLY].getValue())) {
+				reinterpret_cast<BufferedSwitchQuantity*>(paramQuantities[PARAM_APPLY])->setBuffer();
+			}
+		}
 	}
 
 	json_t* dataToJson() override {

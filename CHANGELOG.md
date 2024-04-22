@@ -22,6 +22,10 @@
     - Fixed knob reset on double-click in Semitone/Octave-mode (#387)
 - Module [GOTO](./docs/Goto.md)
     - Implemented smooth transition for "top left" jump destination (#388)
+- Module [MIDI-CAT CTX](./docs/MidiCat.md#ctx-expander)
+    - Fixed broken button-handling when triggered by MIDI-mapping
+- Module [MIDI-CAT MEM](./docs/MidiCat.md#mem-expander)
+    - Fixed broken button-handling when triggered by MIDI-mapping (#356)
 - Module [MIDI-MON](./docs/MidiMon.md)
     - Added support for CC 14-bit/RPN/NRPN messages
 - Module [MIDI-STEP](./docs/MidiStep.md)
@@ -301,9 +305,6 @@
     - Fixed crash on locking more than 32 parameters (#176)
 - Module [INTERMIX](./docs/Intermix.md)
     - Added support for polyphony (#199)
-- Module [MEM](./docs/MidiCat.md#mem-expander)
-    - Added support for MIDI-CAT's new slew-limiting and scaling options ([manual](./docs/MidiCat.md#slew-limiting-and-input-scaling))
-    - Added scanning for next or previous modules with stored mapping ([manual](./docs/MidiCat.md#mem-scan)) (#200)
 - Module [µMAP](./docs/CVMapMicro.md)
     - Added input voltage display
 - Module [MIDI-CAT](./docs/MidiCat.md)
@@ -317,6 +318,9 @@
     - Fixed broken "Re-send MIDI feedback" option
     - Added context menu option for re-sending MIDI feedback periodically ([manual](./docs/MidiCat.md#feedback-periodically))
     - Added note-mode "Toggle + Velocity" ([manual](./docs/MidiCat.md#toggle-velocity))
+- Module [MIDI-CAT MEM](./docs/MidiCat.md#mem-expander)
+    - Added support for MIDI-CAT's new slew-limiting and scaling options ([manual](./docs/MidiCat.md#slew-limiting-and-input-scaling))
+    - Added scanning for next or previous modules with stored mapping ([manual](./docs/MidiCat.md#mem-scan)) (#200)
 - Module [MIDI-STEP](./docs/MidiStep.md)
     - Added option for Akai MPD218 ([manual](./docs/MidiStep.md#akai-mpd218))
 - Module [MIRROR](./docs/Mirror.md)
@@ -350,7 +354,7 @@
 
 ## 1.7.0
 
-- Module [MEM](./docs/MidiCat.md#mem-expander)
+- Module [MIDI-CAT MEM](./docs/MidiCat.md#mem-expander)
     - New expander-module for MIDI-CAT, storage-unit for MIDI mapping-presets with MIDI-CAT
 - Module [SPIN](./docs/Spin.md)
     - New module, converts mouse-wheel or middle mouse-button events into triggers
