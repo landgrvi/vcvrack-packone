@@ -147,6 +147,10 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 		}
 		Module::configParam(PARAM_FADE, 0.f, 1.f, 0.5f, "Fade");
 		Module::configParam(PARAM_SHAPE, -1.f, 1.f, 0.f, "Shape");
+		Module::configInput(INPUT_CV, "CV");
+		Module::configInput(INPUT_RESET, "Reset trigger");
+		Module::configInput(INPUT_FADE, "Fade CV");
+		Module::configOutput(OUTPUT, "Envelope/trigger");
 
 		handleDivider.setDivision(4096);
 		lightDivider.setDivision(512);

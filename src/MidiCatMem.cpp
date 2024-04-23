@@ -40,6 +40,8 @@ struct MidiCatMemModule : Module {
 		configSwitch<BufferedSwitchQuantity>(PARAM_PREV, 0.f, 1.f, 0.f, "Scan for previous module mapping");
 		configSwitch<BufferedSwitchQuantity>(PARAM_NEXT, 0.f, 1.f, 0.f, "Scan for next module mapping");
 		configSwitch<BufferedSwitchQuantity>(PARAM_APPLY, 0.f, 1.f, 0.f, "Apply mapping");
+		configInput(INPUT_PREV, "Previous preset trigger");
+		configInput(INPUT_NEXT, "Next preset trigger");
 		processDivider.setDivision(48);
 		onReset();
 	}

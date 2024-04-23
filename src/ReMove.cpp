@@ -186,6 +186,14 @@ struct ReMoveModule : MapModuleBase<1> {
         configSwitch(RESET_PARAM, 0.0f, 1.0f, 0.0f, "Reset");
         configSwitch(REC_PARAM, 0.0f, 1.0f, 0.0f, "Record");
         configParam(SLEW_PARAM, 0.0f, 0.975f, 0.0f, "Slew");
+        configInput(RUN_INPUT, "Run gate/trigger");
+        configInput(RESET_INPUT, "Reset trigger");
+        configInput(PHASE_INPUT, "Phase CV");
+        configInput(SEQ_INPUT, "Sequence selection");
+        configInput(CV_INPUT, "Automation CV");
+        configInput(REC_INPUT, "Record trigger/gate");
+        configOutput(CV_OUTPUT, "Automation CV");
+        configOutput(REC_OUTPUT, "Record trigger/gate");
 
         seqData = new float[REMOVE_MAX_DATA];
         this->mappingIndicatorColor = nvgRGB(0x40, 0xff, 0xff);
