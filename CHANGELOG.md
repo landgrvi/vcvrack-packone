@@ -22,6 +22,8 @@
     - Fixed knob reset on double-click in Semitone/Octave-mode (#387)
 - Module [GOTO](./docs/Goto.md)
     - Implemented smooth transition for "top left" jump destination (#388)
+- Module [MIDI-CAT](./docs/MidiCat.md)
+    - Implemented response curves (logarithmic/exponential) (#258)
 - Module [MIDI-CAT CTX](./docs/MidiCat.md#ctx-expander)
     - Fixed broken button-handling when triggered by Parameter-mapping
 - Module [MIDI-CAT MEM](./docs/MidiCat.md#mem-expander)

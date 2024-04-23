@@ -4,6 +4,7 @@
 #include "helpers/StripIdFixModule.hpp"
 #include "digital/ScaledMapParam.hpp"
 #include "components/MenuLabelEx.hpp"
+#include "components/CurveMenuItem.hpp"
 #include "components/SubMenuSlider.hpp"
 #include "components/MidiWidget.hpp"
 #include "ui/ParamWidgetContextExtender.hpp"
@@ -1077,6 +1078,7 @@ struct MidiCatModule : Module, StripIdFixModule {
 			json_object_set_new(mapJ, "slew", json_real(midiParam[id].getSlew()));
 			json_object_set_new(mapJ, "min", json_real(midiParam[id].getMin()));
 			json_object_set_new(mapJ, "max", json_real(midiParam[id].getMax()));
+			json_object_set_new(mapJ, "curve", json_real(midiParam[id].getCurve()));
 			json_object_set_new(mapJ, "clockMode", json_integer((int)midiParam[id].clockMode));
 			json_object_set_new(mapJ, "clockSource", json_integer(midiParam[id].clockSource));
 			json_array_append_new(mapsJ, mapJ);
@@ -1133,6 +1135,7 @@ struct MidiCatModule : Module, StripIdFixModule {
 				json_t* slewJ = json_object_get(mapJ, "slew");
 				json_t* minJ = json_object_get(mapJ, "min");
 				json_t* maxJ = json_object_get(mapJ, "max");
+				json_t* curveJ = json_object_get(mapJ, "curve");
 				json_t* clockModeJ = json_object_get(mapJ, "clockMode");
 				json_t* clockSourceJ = json_object_get(mapJ, "clockSource");
 
@@ -1165,6 +1168,7 @@ struct MidiCatModule : Module, StripIdFixModule {
 				if (slewJ) midiParam[mapIndex].setSlew(json_real_value(slewJ));
 				if (minJ) midiParam[mapIndex].setMin(json_real_value(minJ));
 				if (maxJ) midiParam[mapIndex].setMax(json_real_value(maxJ));
+				if (curveJ) midiParam[mapIndex].setCurve(json_real_value(curveJ));
 				if (clockModeJ) midiParam[mapIndex].clockMode = (MidiCatParam::CLOCKMODE)json_integer_value(clockModeJ);
 				if (clockSourceJ) midiParam[mapIndex].clockSource = json_integer_value(clockSourceJ);
 			}
@@ -1245,6 +1249,21 @@ struct SlewSlider : ui::Slider {
 		delete quantity;
 	}
 }; // struct SlewSlider
+
+
+struct MidiCatCurveMenuItem : CurveMenuItem {
+	MidiCatParam* p;
+	MidiCatCurveMenuItem(MidiCatParam* p) {
+		this->p = p;
+	}
+	float getCurveValue() override {
+		return p->getCurve();
+	}
+	void setCurveValue(float v) override {
+		p->setCurve(v);
+	}
+};
+
 
 struct ScalingInputLabel : MenuLabelEx {
 	MidiCatParam* p;
@@ -1605,6 +1624,7 @@ struct MidiCatChoice : MapModuleChoice<MAX_CHANNELS, MidiCatModule> {
 		menu->addChild(new MinSlider(&module->midiParam[id]));
 		menu->addChild(new MaxSlider(&module->midiParam[id]));
 		menu->addChild(construct<PresetMenuItem>(&MenuItem::text, "Presets", &PresetMenuItem::module, module, &PresetMenuItem::id, id));
+		menu->addChild(new MidiCatCurveMenuItem(&module->midiParam[id]));
 		menu->addChild(new MenuSeparator());
 		menu->addChild(construct<LabelMenuItem>(&MenuItem::text, "Custom label", &LabelMenuItem::module, module, &LabelMenuItem::id, id));
 
@@ -2025,6 +2045,7 @@ struct MidiCatWidget : ThemedModuleWidget<MidiCatModule>, ParamWidgetContextExte
 				w.push_back(construct<ScalingOutputLabel>(&MenuLabel::text, "Parameter range", &ScalingOutputLabel::p, &module->midiParam[id]));
 				w.push_back(new MinSlider(&module->midiParam[id]));
 				w.push_back(new MaxSlider(&module->midiParam[id]));
+				w.push_back(new MidiCatCurveMenuItem(&module->midiParam[id]));
 				w.push_back(construct<CenterModuleItem>(&MenuItem::text, "Go to mapping module", &CenterModuleItem::mw, this));
 				w.push_back(new MidiCatEndItem);
 
