@@ -23,14 +23,16 @@
 - Module [GOTO](./docs/Goto.md)
     - Implemented smooth transition for "top left" jump destination (#388)
 - Module [MIDI-CAT CTX](./docs/MidiCat.md#ctx-expander)
-    - Fixed broken button-handling when triggered by MIDI-mapping
+    - Fixed broken button-handling when triggered by Parameter-mapping
 - Module [MIDI-CAT MEM](./docs/MidiCat.md#mem-expander)
-    - Fixed broken button-handling when triggered by MIDI-mapping (#356)
+    - Fixed broken button-handling when triggered by Parameter-mapping (#356)
     - Added trigger-inputs for Prev and Next
 - Module [MIDI-MON](./docs/MidiMon.md)
     - Added support for CC 14-bit/RPN/NRPN messages
 - Module [MIDI-STEP](./docs/MidiStep.md)
     - Added option for Hercules DJControl Starlight (#361)
+- Module [STRIP++](./docs/StripPp.md)
+    - Ask to view unavailable modules on the VCV Library when loading a selection
 
 ## 2.0.beta4
 
