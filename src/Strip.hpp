@@ -54,6 +54,68 @@ struct StripWidgetBase : ThemedModuleWidget<MODULE> {
 	StripWidgetBase(MODULE* module, std::string baseName)
 	: ThemedModuleWidget<MODULE>(module, baseName) { }
 
+	void groupCheckUnavailable(json_t* rootJ) {
+		std::set<std::string> pluginModuleSlugs;
+
+		size_t moduleIndex;
+		json_t* moduleJ;
+
+		json_t* rightModulesJ = json_object_get(rootJ, "rightModules");
+		if (rightModulesJ) {
+			json_array_foreach(rightModulesJ, moduleIndex, moduleJ) {
+				try {
+					// Get model
+					plugin::modelFromJson(moduleJ);
+				}
+				catch (Exception& e) {
+					// Get plugin and module slugs
+					json_t* pluginSlugJ = json_object_get(moduleJ, "plugin");
+					if (!pluginSlugJ) continue;
+
+					std::string pluginSlug = json_string_value(pluginSlugJ);
+
+					json_t* modelSlugJ = json_object_get(moduleJ, "model");
+					if (!modelSlugJ) continue;
+
+					std::string modelSlug = json_string_value(modelSlugJ);
+					pluginModuleSlugs.insert(pluginSlug + "/" + modelSlug);
+				}
+			}
+		}
+
+		json_t* leftModulesJ = json_object_get(rootJ, "leftModules");
+		if (leftModulesJ) {
+			json_array_foreach(leftModulesJ, moduleIndex, moduleJ) {
+				try {
+					// Get model
+					plugin::modelFromJson(moduleJ);
+				}
+				catch (Exception& e) {
+					// Get plugin and module slugs
+					json_t* pluginSlugJ = json_object_get(moduleJ, "plugin");
+					if (!pluginSlugJ) continue;
+
+					std::string pluginSlug = json_string_value(pluginSlugJ);
+
+					json_t* modelSlugJ = json_object_get(moduleJ, "model");
+					if (!modelSlugJ) continue;
+
+					std::string modelSlug = json_string_value(modelSlugJ);
+					pluginModuleSlugs.insert(pluginSlug + "/" + modelSlug);
+				}
+			}
+		}
+
+		if (!pluginModuleSlugs.empty()) {
+			std::string msg = "This selection/strip includes modules that are not installed. Show missing modules on the VCV Library?";
+			if (osdialog_message(OSDIALOG_WARNING, OSDIALOG_YES_NO, msg.c_str())) {
+				std::string url = "https://library.vcvrack.com/?modules=";
+				url += string::join(pluginModuleSlugs, ",");
+				system::openBrowser(url);
+			}
+		}
+	}
+
 	void groupSelectionCheckUnavailable(json_t* rootJ) {
 		std::set<std::string> pluginModuleSlugs;
 
@@ -958,7 +1020,6 @@ struct StripWidgetBase : ThemedModuleWidget<MODULE> {
 		APP->history->push(complexAction);
 	}
 
-
 	void groupReplaceFromJson(json_t* rootJ) {
 		warningLog = "";
 
@@ -1076,6 +1137,7 @@ struct StripWidgetBase : ThemedModuleWidget<MODULE> {
 			json_decref(rootJ);
 		});
 
+		groupCheckUnavailable(rootJ);
 		if (replace) groupReplaceFromJson(rootJ);
 		else groupFromJson(rootJ);
 	}

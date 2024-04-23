@@ -31,6 +31,8 @@
     - Added support for CC 14-bit/RPN/NRPN messages
 - Module [MIDI-STEP](./docs/MidiStep.md)
     - Added option for Hercules DJControl Starlight (#361)
+- Module [STRIP](./docs/Strip.md)
+    - Ask to view unavailable modules on the VCV Library when loading a strip (#18)
 - Module [STRIP++](./docs/StripPp.md)
     - Ask to view unavailable modules on the VCV Library when loading a selection
 
