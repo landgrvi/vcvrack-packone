@@ -55,6 +55,7 @@ struct ScaledMapParam {
 			filterSlew = 0.f;
 			min = 0.f;
 			max = 1.f;
+			curve = 0.f;
 		}
 	}
 

@@ -864,6 +864,7 @@ struct MidiCatModule : Module, StripIdFixModule {
 			midiParam[learningId].setSlew(midiParam[learningId - 1].getSlew());
 			midiParam[learningId].setMin(midiParam[learningId - 1].getMin());
 			midiParam[learningId].setMax(midiParam[learningId - 1].getMax());
+			midiParam[learningId].setCurve(midiParam[learningId - 1].getCurve());
 			midiParam[learningId].clockMode = midiParam[learningId - 1].clockMode;
 			midiParam[learningId].clockSource = midiParam[learningId - 1].clockSource;
 		}
@@ -985,6 +986,7 @@ struct MidiCatModule : Module, StripIdFixModule {
 			p->slew = midiParam[i].getSlew();
 			p->min = midiParam[i].getMin();
 			p->max = midiParam[i].getMax();
+			p->curve = midiParam[i].getCurve();
 			m->paramMap.push_back(p);
 		}
 		m->pluginName = module->model->plugin->name;
@@ -1028,6 +1030,7 @@ struct MidiCatModule : Module, StripIdFixModule {
 			midiParam[i].setSlew(it->slew);
 			midiParam[i].setMin(it->min);
 			midiParam[i].setMax(it->max);
+			midiParam[i].setCurve(it->curve);
 			i++;
 		}
 		updateMapLen();

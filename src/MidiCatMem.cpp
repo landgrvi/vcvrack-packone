@@ -102,6 +102,7 @@ struct MidiCatMemModule : Module {
 				json_object_set_new(paramMapJJ, "slew", json_real(p->slew));
 				json_object_set_new(paramMapJJ, "min", json_real(p->min));
 				json_object_set_new(paramMapJJ, "max", json_real(p->max));
+				json_object_set_new(paramMapJJ, "curve", json_real(p->curve));
 				json_array_append_new(paramMapJ, paramMapJJ);
 			}
 			json_object_set_new(midiMapJJ, "paramMap", paramMapJ);
@@ -147,6 +148,8 @@ struct MidiCatMemModule : Module {
 				if (minJ) p->min = json_real_value(minJ);
 				json_t* maxJ = json_object_get(paramMapJJ, "max");
 				if (maxJ) p->max = json_real_value(maxJ);
+				json_t* curveJ = json_object_get(paramMapJJ, "curve");
+				if (curveJ) p->curve = json_real_value(curveJ);
 				a->paramMap.push_back(p);
 			}
 			midiMap[std::pair<std::string, std::string>(pluginSlug, moduleSlug)] = a;

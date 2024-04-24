@@ -41,6 +41,7 @@ struct MemParam {
 	float slew = 0.f;
 	float min = 0.f;
 	float max = 1.f;
+	float curve = 0.f;
 };
 
 struct MemModule {
