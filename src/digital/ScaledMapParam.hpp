@@ -156,14 +156,18 @@ struct ScaledMapParam {
 
 	virtual T getValue() {
 		float f = paramQuantity->getScaledValue();
+		// Simply return the input-value if the Param's current value is almost unchanged
 		if (isNear(valueOut, f)) return valueIn;
 
 		// Reset the internal values to the actual parameter's value in case
 		// getValue() is called before setValue() - for proper MIDI feedback
 		if (valueOut == std::numeric_limits<float>::infinity()) value = valueOut = f;
-		// If a parameter is snapped then the returned value of ParaQuantity can't be trusted
-		// -> simply return the input value
-		if (paramQuantity->snapEnabled) f = valueOut;
+		// If a parameter is snapped then the returned value of ParamQuantity can't be trusted
+		// -> Use the parameter's actual value bypassing ParamQuantity
+		if (paramQuantity->snapEnabled) {
+			f = paramQuantity->getParam()->getValue();
+			f = math::rescale(f, paramQuantity->getMinValue(), paramQuantity->getMaxValue(), 0.f, 1.f);
+		}
 
 		f = processCurveInverse(f);
 		f = rescale(f, min, max, limitMin, limitMax);
