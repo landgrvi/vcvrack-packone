@@ -29,7 +29,7 @@ struct TransitExModule : TransitBase<NUM_PRESETS> {
 		BASE::panelTheme = pluginSettings.panelThemeDefault;
 		Module::config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		for (int i = 0; i < NUM_PRESETS; i++) {
-			Module::configParam<TransitParamQuantity<NUM_PRESETS>>(PARAM_PRESET + i, 0, 1, 0);
+			Module::configSwitch<TransitParamQuantity<NUM_PRESETS>>(PARAM_PRESET + i, 0, 1, 0);
 			TransitParamQuantity<NUM_PRESETS>* pq = (TransitParamQuantity<NUM_PRESETS>*)Module::paramQuantities[PARAM_PRESET + i];
 			pq->module = this;
 			pq->id = i;
