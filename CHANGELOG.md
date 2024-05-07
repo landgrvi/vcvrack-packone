@@ -38,6 +38,8 @@
     - Ask to view unavailable modules on the VCV Library when loading a strip (#18)
 - Module [STRIP++](./docs/StripPp.md)
     - Ask to view unavailable modules on the VCV Library when loading a selection
+- Module [TRANSIT](./docs/Transit.md)
+    - Added fade setting per slot
 
 ## 2.0.beta4
 

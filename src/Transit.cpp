@@ -82,6 +82,7 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 	/** Holds the last values on transitions */
 	std::vector<float> presetOld;
 	std::vector<float> presetNew;
+	float presetFadeTime;
 
 	/** [Stored to JSON] mode for SEQ CV input */
 	SLOTCVMODE slotCvMode = SLOTCVMODE::TRIG_FWD;
@@ -193,6 +194,7 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 		for (int i = 0; i < NUM_PRESETS; i++) {
 			BASE::presetSlotUsed[i] = false;
 			BASE::textLabel[i] = "";
+			BASE::fadeTime[i] = -1.f;
 			BASE::preset[i].clear();
 		}
 
@@ -239,6 +241,12 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 		if (index >= presetTotal) return NULL;
 		int n = index / NUM_PRESETS;
 		return &N[n]->textLabel[index % NUM_PRESETS];
+	}
+
+	inline float expSlotFadeTime(int index) {
+		if (index >= presetTotal) return -1.f;
+		int n = index / NUM_PRESETS;
+		return N[n]->fadeTime[index % NUM_PRESETS];
 	}
 
 	void process(const Module::ProcessArgs& args) override {
@@ -598,6 +606,7 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 				outSocPulseGenerator.trigger();
 				outEocArm = true;
 				processing = true;
+				presetFadeTime = expSlotFadeTime(p);
 				presetOld.clear();
 				presetNew.clear();
 				for (size_t i = 0; i < sourceHandles.size(); i++) {
@@ -620,7 +629,7 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 			if (preset == -1) return;
 			float deltaTime = sampleTime * presetProcessDivision;
 
-			float fade = BASE::inputs[INPUT_FADE].getVoltage() / 10.f + BASE::params[PARAM_FADE].getValue();
+			float fade = presetFadeTime < 0.f ? (BASE::inputs[INPUT_FADE].getVoltage() / 10.f + BASE::params[PARAM_FADE].getValue()) : presetFadeTime;
 			slewLimiter.setRise(fade);
 			float shape = BASE::params[PARAM_SHAPE].getValue();
 			slewLimiter.setShape(shape);
