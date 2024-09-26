@@ -38,6 +38,11 @@ enum class OUTMODE {
 	PHASE = 5
 };
 
+struct ParamHandleEx : ParamHandleIndicator {
+	bool isSwitch = false;
+};
+
+
 template <int NUM_PRESETS>
 struct TransitModule : TransitBase<NUM_PRESETS> {
 	typedef TransitBase<NUM_PRESETS> BASE;
@@ -110,7 +115,7 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 	bool inChange = false;
 
 	/** [Stored to JSON] */
-	std::vector<ParamHandleIndicator*> sourceHandles;
+	std::vector<ParamHandleEx*> sourceHandles;
 
 	dsp::SchmittTrigger slotTrigger;
 	dsp::SchmittTrigger slotC4Trigger;
@@ -280,7 +285,7 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 		if (handleDivider.process()) {
 			float st = args.sampleTime * handleDivider.division;
 			for (size_t i = 0; i < sourceHandles.size(); i++) {
-				ParamHandleIndicator* sourceHandle = sourceHandles[i];
+				ParamHandleEx* sourceHandle = sourceHandles[i];
 				sourceHandle->color = mappingIndicatorHidden ? color::BLACK_TRANSPARENT : nvgRGB(0x40, 0xff, 0xff);
 				sourceHandle->process(st);
 			}
@@ -560,7 +565,7 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 			}
 		}
 
-		ParamHandleIndicator* sourceHandle = new ParamHandleIndicator;
+		ParamHandleEx* sourceHandle = new ParamHandleEx;
 		sourceHandle->text = "stoermelder TRANSIT";
 		APP->engine->addParamHandle(sourceHandle);
 		APP->engine->updateParamHandle(sourceHandle, moduleId, paramId, true);
@@ -569,6 +574,9 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 		inChange = false;
 
 		ParamQuantity* pq = getParamQuantity(sourceHandle);
+		SwitchQuantity* spq = dynamic_cast<SwitchQuantity*>(pq);
+		sourceHandle->isSwitch = !!spq && pq->getMaxValue() != 1.f;
+
 		float v = pq ? pq->getValue() : 0.f;
 		for (int i = 0; i < presetTotal; i++) {
 			TransitSlot* slot = expSlot(i);
@@ -681,10 +689,17 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 				float oldValue = presetOld[i];
 				if (presetNew.size() <= i) return;
 				float newValue = presetNew[i];
-				float v = crossfade(oldValue, newValue, s10);
-				if (s10 > (1.f - 5e-3f) && std::abs(std::round(v) - v) < 5e-3f) v = std::round(v);
-				//pq->setValue(v);
-				pq->getParam()->setValue(v);
+
+				if (sourceHandles[i]->isSwitch) {
+					float v = s10 < 0.5f ? oldValue : newValue;
+					pq->getParam()->setValue(v);
+				}
+				else {
+					float v = crossfade(oldValue, newValue, s10);
+					if (s10 > (1.f - 5e-3f) && std::abs(std::round(v) - v) < 5e-3f) v = std::round(v);
+					//pq->setValue(v);
+					pq->getParam()->setValue(v);
+				}
 			}
 
 			if (s == 10.f) {
@@ -951,13 +966,17 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 				int paramId = json_integer_value(paramIdJ);
 				moduleId = BASE::idFix(moduleId);
 
-				// This might cause a deadlock as the engine's mutex could already be locked
+				// This might cause a deadlock as the engine's mutex could already been locked
 				handleList.push_back([=]() {
-					ParamHandleIndicator* sourceHandle = new ParamHandleIndicator;
+					ParamHandleEx* sourceHandle = new ParamHandleEx;
 					sourceHandle->text = "stoermelder TRANSIT";
 					APP->engine->addParamHandle(sourceHandle);
 					APP->engine->updateParamHandle(sourceHandle, moduleId, paramId, false);
 					sourceHandles.push_back(sourceHandle);
+
+					ParamQuantity* pq = getParamQuantity(sourceHandle);
+					SwitchQuantity* spq = dynamic_cast<SwitchQuantity*>(pq);
+					sourceHandle->isSwitch = !!spq;
 				});
 			}
 		}
@@ -1289,7 +1308,7 @@ struct TransitWidget : ThemedModuleWidget<TransitModule<NUM_PRESETS>> {
 
 			menu->addChild(createSubmenuItem("Bound parameters", "", [=](Menu* menu) {
 				for (size_t i = 0; i < module->sourceHandles.size(); i++) {
-					ParamHandleIndicator* handle = module->sourceHandles[i];
+					ParamHandleEx* handle = module->sourceHandles[i];
 					ModuleWidget* moduleWidget = APP->scene->rack->getModule(handle->moduleId);
 					if (!moduleWidget) continue;
 					ParamWidget* paramWidget = moduleWidget->getParam(handle->paramId);

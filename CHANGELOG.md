@@ -40,6 +40,7 @@
     - Ask to view unavailable modules on the VCV Library when loading a selection
 - Module [TRANSIT](./docs/Transit.md)
     - Added fade setting per slot
+    - Improved handling on mapped switches (skipping all immediate values)
 
 ## 2.0.beta4
 
