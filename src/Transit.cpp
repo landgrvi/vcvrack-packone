@@ -831,6 +831,7 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 	}
 
 	void presetShiftBack(int p) {
+		inChange = true;
 		for (int i = presetTotal - 2; i >= p; i--) {
 			TransitSlot* slot = expSlot(i);
 			if (*(slot->presetSlotUsed)) {
@@ -842,9 +843,11 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 			}
 		}
 		presetClear(p);
+		inChange = false;
 	}
 
 	void presetShiftFront(int p) {
+		inChange = true;
 		for (int i = 1; i <= p; i++) {
 			TransitSlot* slot = expSlot(i);
 			if (*(slot->presetSlotUsed)) {
@@ -856,6 +859,37 @@ struct TransitModule : TransitBase<NUM_PRESETS> {
 			}
 		}
 		presetClear(p);
+		inChange = false;
+	}
+
+	void presetCleanUp() {
+		inChange = true;
+		for (size_t i = 0; i < sourceHandles.size(); ) {
+			ParamQuantity* pq = getParamQuantity(sourceHandles[i]);
+			if (!pq) {
+				for (int j = 0; j < presetTotal; j++) {
+					TransitSlot* slot = expSlot(j);
+					if (*(slot->presetSlotUsed)) {
+						if (slot->preset->size() > i) {
+							slot->preset->erase(slot->preset->begin() + i);
+						}
+					}
+					else {
+						presetClear(j);
+					}
+				}
+				sourceHandles.erase(sourceHandles.begin() + i);
+			}
+			else {
+				i++;
+			}
+		}
+		for (int j = 0; j < presetTotal; j++) {
+			TransitSlot* slot = expSlot(j);
+			if (!*(slot->presetSlotUsed)) continue;
+			assert(sourceHandles.size() == slot->preset->size());
+		}
+		inChange = false;
 	}
 
 	void setProcessDivision(int d) {
@@ -1284,14 +1318,15 @@ struct TransitWidget : ThemedModuleWidget<TransitModule<NUM_PRESETS>> {
 
 		if (module->sourceHandles.size() > 0) {
 			menu->addChild(new MenuSeparator());
-			menu->addChild(createSubmenuItem("Bound modules", "", [=](Menu* menu) {
-				std::set<int64_t> moduleIds;
-				for (size_t i = 0; i < module->sourceHandles.size(); i++) {
-					ParamHandle* handle = module->sourceHandles[i];
-					if (moduleIds.find(handle->moduleId) == moduleIds.end())
-						moduleIds.insert(handle->moduleId);
-				}
 
+			std::set<int64_t> moduleIds;
+			for (size_t i = 0; i < module->sourceHandles.size(); i++) {
+				ParamHandle* handle = module->sourceHandles[i];
+				if (moduleIds.find(handle->moduleId) == moduleIds.end()) {
+					moduleIds.insert(handle->moduleId);
+				}
+			}
+			menu->addChild(createSubmenuItem(string::f("Bound modules: %lli", moduleIds.size()), "", [=](Menu* menu) {
 				for (int64_t moduleId : moduleIds) {
 					ModuleWidget* moduleWidget = APP->scene->rack->getModule(moduleId);
 					if (!moduleWidget) continue;
@@ -1306,21 +1341,30 @@ struct TransitWidget : ThemedModuleWidget<TransitModule<NUM_PRESETS>> {
 				}
 			}));
 
-			menu->addChild(createSubmenuItem("Bound parameters", "", [=](Menu* menu) {
+			menu->addChild(createSubmenuItem(string::f("Bound parameters: %lli", module->sourceHandles.size()), "", [=](Menu* menu) {
 				for (size_t i = 0; i < module->sourceHandles.size(); i++) {
 					ParamHandleEx* handle = module->sourceHandles[i];
 					ModuleWidget* moduleWidget = APP->scene->rack->getModule(handle->moduleId);
 					if (!moduleWidget) continue;
+
 					ParamWidget* paramWidget = moduleWidget->getParam(handle->paramId);
-					if (!paramWidget) continue;
-					
-					std::string text = string::f("%s %s", moduleWidget->model->name.c_str(), paramWidget->getParamQuantity()->getLabel().c_str());
-					menu->addChild(createSubmenuItem(text, "", [=](Menu* menu) {
-						menu->addChild(createMenuItem("Locate and indicate", "", [=]() { handle->indicate(APP->scene->rack->getModule(handle->moduleId)); }));
-						menu->addChild(createMenuItem("Unbind", "", [=]() { APP->engine->updateParamHandle(handle, -1, 0, true); }));
-					}));
+					if (paramWidget) {
+						std::string text = string::f("%s %s", moduleWidget->model->name.c_str(), paramWidget->getParamQuantity()->getLabel().c_str());
+						menu->addChild(createSubmenuItem(text, "", [=](Menu* menu) {
+							menu->addChild(createMenuItem("Locate and indicate", "", [=]() { handle->indicate(APP->scene->rack->getModule(handle->moduleId)); }));
+							menu->addChild(createMenuItem("Unbind", "", [=]() { APP->engine->updateParamHandle(handle, -1, 0, true); }));
+						}));
+					}
+					else {
+						std::string text = string::f("%s <hidden parameter>", moduleWidget->model->name.c_str());
+						menu->addChild(createSubmenuItem(text, "", [=](Menu* menu) {
+							menu->addChild(createMenuItem("Unbind", "", [=]() { APP->engine->updateParamHandle(handle, -1, 0, true); }));
+						}));
+					}
 				}
 			}));
+
+			menu->addChild(createMenuItem("Clean invalid parameters up", "", [=]() { module->presetCleanUp(); }));
 		}
 	}
 };

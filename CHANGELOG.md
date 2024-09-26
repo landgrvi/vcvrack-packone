@@ -43,6 +43,7 @@
 - Module [TRANSIT](./docs/Transit.md)
     - Added fade setting per slot
     - Improved handling on mapped switches (skipping all immediate values)
+    - Added context menu option to clean invalid bound parameters up (#383)
 
 ## 2.0.beta4
 
