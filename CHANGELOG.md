@@ -20,6 +20,8 @@
     - Added "Auto"-mode besides "Read" and "Write" ([manual](./docs/EightFaceMk2.md#auto-mode)) (#276)
 - Module [AFFIX](./docs/Affix.md), [µAFFIX](./docs/Affix.md)
     - Fixed knob reset on double-click in Semitone/Octave-mode (#387)
+- Module [ARENA](./docs/Arena.md)
+    - Fixed behavior of attenuvertors for X/Y/MOD-inputs (#394)
 - Module [GOTO](./docs/Goto.md)
     - Implemented smooth transition for "top left" jump destination (#388)
 - Module [MIDI-CAT](./docs/MidiCat.md)
