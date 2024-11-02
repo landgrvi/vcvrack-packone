@@ -24,6 +24,10 @@
     - Fixed behavior of attenuvertors for X/Y/MOD-inputs (#394)
 - Module [GOTO](./docs/Goto.md)
     - Implemented smooth transition for "top left" jump destination (#388)
+- Module [MB](./docs/Mb.md)
+    - Fixed usage in multiple plugin-instances
+- Module [ME](./docs/Me.md)
+    - Fixed usage in multiple plugin-instances
 - Module [MIDI-CAT](./docs/MidiCat.md)
     - Implemented response curves (logarithmic/exponential) (#258)
     - Fixed MIDI-feedback for snapped parameters (#374)
@@ -40,6 +44,7 @@
     - Ask to view unavailable modules on the VCV Library when loading a strip (#18)
 - Module [STRIP++](./docs/StripPp.md)
     - Ask to view unavailable modules on the VCV Library when loading a selection
+    - Fixed usage in multiple plugin-instances
 - Module [TRANSIT](./docs/Transit.md)
     - Added fade setting per slot
     - Improved handling on mapped switches (skipping all immediate values)

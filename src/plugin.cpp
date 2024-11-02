@@ -71,19 +71,19 @@ void init(rack::Plugin* p) {
 
 namespace StoermelderPackOne {
 
-std::map<std::string, Widget*> singletons;
+std::map<std::tuple<std::string, Context*>, Widget*> singletons;
 
 bool registerSingleton(std::string name, Widget* mw) {
-	auto it = singletons.find(name);
+	auto it = singletons.find(std::make_tuple(name, APP));
 	if (it == singletons.end()) {
-		singletons[name] = mw;
+		singletons[std::make_tuple(name, APP)] = mw;
 		return true;
 	}
 	return false;
 }
 
 bool unregisterSingleton(std::string name, Widget* mw) {
-	auto it = singletons.find(name);
+	auto it = singletons.find(std::make_tuple(name, APP));
 	if (it != singletons.end() && it->second == mw) {
 		singletons.erase(it);
 		return true;
@@ -92,7 +92,7 @@ bool unregisterSingleton(std::string name, Widget* mw) {
 }
 
 Widget* getSingleton(std::string name) {
-	auto it = singletons.find(name);
+	auto it = singletons.find(std::make_tuple(name, APP));
 	return it != singletons.end() ? it->second : NULL;
 }
 
